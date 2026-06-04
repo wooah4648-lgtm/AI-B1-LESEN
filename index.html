@@ -195,6 +195,7 @@
         }
 
         // 處理驗證答案的邏輯 (獨立出來)
+        // 處理驗證答案的邏輯 (最安全相容版本)
         function checkAnswer() {
             if (selectedIndex === null) return;
             idHasBeenChecked = true;
@@ -205,13 +206,14 @@
             // 移除被選中的藍色外框
             document.getElementById(`opt${selectedIndex}`).classList.remove('selected');
 
-            // 判定答案對錯並亮起紅綠燈
-            if (selectedIndex === correctAnswerIndex) {
+            // 【終極修正】使用 == 允許字串與數字比對，並防呆確保 correctAnswerIndex 有值
+            if (correctAnswerIndex !== null && selectedIndex == correctAnswerIndex) {
                 document.getElementById(`opt${selectedIndex}`).classList.add('correct');
                 feedback.className = "feedback-box success";
                 feedbackTitle.innerText = "🎉 答對了！Sehr gut!";
             } else {
                 document.getElementById(`opt${selectedIndex}`).classList.add('wrong');
+                // 顯示正確答案
                 if (correctAnswerIndex !== null && document.getElementById(`opt${correctAnswerIndex}`)) {
                     document.getElementById(`opt${correctAnswerIndex}`).classList.add('correct');
                 }
@@ -219,8 +221,8 @@
                 feedbackTitle.innerText = "❌ 答錯囉！再試一次！";
             }
             
-            // 攤開後端大詳解
-            feedbackText.innerHTML = currentExplanation;
+            // 如果後端詳解是空的，給予預設文字防呆
+            feedbackText.innerHTML = currentExplanation ? currentExplanation : "AI 暫無提供本題詳解。";
             feedback.style.display = "block";
             document.getElementById('submitBtn').disabled = true;
         }
